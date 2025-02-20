@@ -1,2 +1,5 @@
+# dotnet settings
+*.user
+
 # Rider
-.idea/
+**/.idea/
