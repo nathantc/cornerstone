@@ -289,5 +289,4 @@ __pycache__/
 *.xsd.cs
 
 # Sqlite database
-app.db
-app.db.*
+app.db*

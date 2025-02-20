@@ -31,3 +31,9 @@ Run the command:
 ```
  dotnet-ef migrations add InitialCreate
 ```
+
+# Run Application
+
+## View API
+
+http://localhost:5214/swagger/index.html
