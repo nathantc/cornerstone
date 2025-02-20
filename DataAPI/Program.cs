@@ -17,12 +17,35 @@ using (var scope = app.Services.CreateScope())
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     db.Database.EnsureCreated();
 
+    // Seed Industry Types
     if (!db.IndustryTypes.Any())
     {
         db.IndustryTypes.AddRange(
             new IndustryType { Name = "Technology" },
             new IndustryType { Name = "Healthcare" },
             new IndustryType { Name = "Finance" }
+        );
+        db.SaveChanges();
+    }
+
+    // Seed License Types
+    if (!db.LicenseTypes.Any())
+    {
+        db.LicenseTypes.AddRange(
+            new LicenseType { Name = "Business License" },
+            new LicenseType { Name = "Professional License" },
+            new LicenseType { Name = "Trade License" }
+        );
+        db.SaveChanges();
+    }
+
+    // Seed Filing Types
+    if (!db.FilingTypes.Any())
+    {
+        db.FilingTypes.AddRange(
+            new FilingType { Name = "Annual Report" },
+            new FilingType { Name = "Tax Filing" },
+            new FilingType { Name = "Compliance Filing" }
         );
         db.SaveChanges();
     }
