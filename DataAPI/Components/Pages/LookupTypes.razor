@@ -1,0 +1,73 @@
+@page "/lookup/{type}"
+@using DataAPI.Data
+@using Microsoft.AspNetCore.Mvc
+@inject HttpClient Http
+
+@functions {
+    [Parameter]
+    [FromRoute] public string? Type { get; set; }
+
+    private List<LookupType>? _data = [];
+    private string _title = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!string.IsNullOrEmpty(Type))
+        {
+            _title = GetTitle(Type);
+            _data = await Http.GetFromJsonAsync<List<LookupType>>($"api/{Type}");
+        }
+    }
+
+    async Task Delete(int id)
+    {
+        await Http.DeleteAsync($"api/{Type}/{id}");
+        _data = await Http.GetFromJsonAsync<List<LookupType>>($"api/{Type}");
+    }
+
+    private static string GetTitle(string type) => type switch
+    {
+        "IndustryType" => "Industry Types",
+        "FilingType" => "Filing Types",
+        "LicenseType" => "License Types",
+        _ => "Lookup Data"
+    };
+}
+
+<h3>@_title</h3>
+
+<a href="/lookup/@Type/new">Add New Record</a>
+
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    @if (_data != null)
+    {
+        @foreach (var item in _data)
+        {
+            <tr>
+                <td>@item.Id</td>
+                <td>@item.Name</td>
+                <td>
+                    <a href="/lookup/@Type/@item.Id">Edit</a>
+                    <button @onclick="() => Delete(item.Id)">Delete</button>
+                </td>
+            </tr>
+        }
+    }
+    </tbody>
+</table>
+
+@code {
+    public class LookupType
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+    }
+}
