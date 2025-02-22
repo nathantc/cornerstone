@@ -18,12 +18,6 @@
         }
     }
 
-    async Task Delete(int id)
-    {
-        await Http.DeleteAsync($"api/{Type}/{id}");
-        _data = await Http.GetFromJsonAsync<List<LookupType>>($"api/{Type}");
-    }
-
     private static string GetTitle(string type) => type switch
     {
         "IndustryType" => "Industry Types",
@@ -55,7 +49,7 @@
                 <td>@item.Name</td>
                 <td>
                     <a href="/lookup/@Type/@item.Id">Edit</a>
-                    <button @onclick="() => Delete(item.Id)">Delete</button>
+                    <a href="/lookup/@Type/@item.Id/delete">Delete</a>
                 </td>
             </tr>
         }

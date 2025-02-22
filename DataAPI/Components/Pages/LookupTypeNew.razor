@@ -1,0 +1,67 @@
+@page "/lookup/{Type}/new"
+@using Microsoft.AspNetCore.Mvc
+@inject HttpClient Http
+@inject NavigationManager Navigation
+
+@code {
+    [Parameter]
+    [FromRoute] public string? Type { get; set; }
+
+    private LookupType _lookupItem = new();
+    private string _title = "";
+
+    protected override void OnInitialized()
+    {
+        if (!string.IsNullOrEmpty(Type))
+        {
+            _title = GetTitle(Type);
+        }
+    }
+
+    private async Task Save()
+    {
+        try
+        {
+            var response = await Http.PostAsJsonAsync($"api/{Type}", _lookupItem);
+
+            if (response.IsSuccessStatusCode)
+            {
+                Navigation.NavigateTo($"/lookup/{Type}");
+            }
+            else
+            {
+                Console.WriteLine($"Error saving data: {response.StatusCode}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Save Error: {ex.Message}");
+        }
+    }
+
+    private static string GetTitle(string type) => type switch
+    {
+        "IndustryType" => "Add Industry Type",
+        "FilingType" => "Add Filing Type",
+        "LicenseType" => "Add License Type",
+        _ => "Add Lookup Data"
+    };
+}
+
+<h3>@_title</h3>
+
+<div>
+    <label for="name">Name:</label>
+    <input id="name" @bind="_lookupItem.Name" />
+</div>
+
+<button @onclick="Save">Save</button>
+<a href="/lookup/@Type">Cancel</a>
+
+@code {
+    public class LookupType : DataAPI.Data.LookupType
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+    }
+}
