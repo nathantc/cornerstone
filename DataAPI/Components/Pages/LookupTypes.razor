@@ -9,7 +9,7 @@
     private List<LookupType>? _data = [];
     private string _title = "";
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnParametersSetAsync()
     {
         if (!string.IsNullOrEmpty(Type))
         {

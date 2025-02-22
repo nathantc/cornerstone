@@ -5,8 +5,6 @@
 
 @rendermode InteractiveServer
 
-
-
 <h3>@Type
     @RendererInfo.IsInteractive
 </h3>
@@ -42,7 +40,7 @@
     private string _title = "";
     private int _id = 0;
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnParametersSetAsync()
     {
 
         if (!string.IsNullOrEmpty(Type) && !string.IsNullOrEmpty(Id))
