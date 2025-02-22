@@ -1,39 +1,6 @@
-# Data API Project Setup
+# Data API Project
 
-The following steps are to set up the DataAPI project.
-
-## 1. Install Packages
-
-Install Swagger support packages:
-```
-dotnet add package Swashbuckle.AspNetCore
-```
-Install Sqlite support packages:
-```
-dotnet add package Microsoft.EntityFrameworkCore.Sqlite
-```
-[Needs description]
-```
-dotnet add package Microsoft.EntityFrameworkCore.Design
-```
-Install Entity Framework Core Tools for creating database migrations.
-```
-dotnet tool install --global dotnet-ef
-```
-
-## 2. Run Data Migrations
-
-# Database Creation
-
-## 1. Add InitialCreate Migration
-
-Run the command: 
-```
- dotnet-ef migrations add InitialCreate
-```
-
-# Run Application
-
-## View API
-
-http://localhost:5214/swagger/index.html
+This project consists of three layers:
+* Data (`Data`) - EntityFramework using Sqlite database.
+* API (`Controllers`) - API Controller providing RESTful services.
+* Web (`Components`) - User Interface.
