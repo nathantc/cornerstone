@@ -1,5 +1,4 @@
 @page "/lookup/{type}"
-@using DataAPI.Data
 @using Microsoft.AspNetCore.Mvc
 @inject HttpClient Http
 
@@ -65,7 +64,7 @@
 </table>
 
 @code {
-    public class LookupType
+    public class LookupType: DataAPI.Data.LookupType
     {
         public int Id { get; set; }
         public string Name { get; set; }

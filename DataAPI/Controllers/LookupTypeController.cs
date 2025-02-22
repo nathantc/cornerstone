@@ -6,7 +6,7 @@ namespace DataAPI.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public abstract class LookTypeController<T> : ControllerBase where T : class, ILookupType
+public abstract class LookTypeController<T> : ControllerBase where T : LookupType
 {
     private readonly AppDbContext _context;
     private readonly DbSet<T> _dbSet;
