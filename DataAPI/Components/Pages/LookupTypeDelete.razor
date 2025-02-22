@@ -1,87 +1,31 @@
 @page "/lookup/{Type}/{Id}/delete"
-@using Microsoft.AspNetCore.Mvc
 @inject HttpClient Http
 @inject NavigationManager Navigation
 
 @code {
-    [Parameter]
-    [FromRoute] public string? Type { get; set; }
-    
-    [Parameter]
-    [FromRoute] public string Id { get; set; }
+    [Parameter] public string? Type { get; set; }
+    [Parameter] public string? Id { get; set; }
 
-    private LookupType _lookupItem = new();
-    private string _title = "";
     private int _id = 0;
+    private LookupTypeForm.LookupType _lookupItem = new();
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnParametersSetAsync()
     {
-        if (!string.IsNullOrEmpty(Type))
+        if (!string.IsNullOrEmpty(Type) && !string.IsNullOrEmpty(Id))
         {
-            _title = GetTitle(Type);
             _id = int.Parse(Id);
-            try
-            {
-                _lookupItem = await Http.GetFromJsonAsync<LookupType>($"api/{Type}/{_id}") ?? new LookupType();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error fetching data: {ex.Message}");
-                Navigation.NavigateTo("/lookup");
-            }
+            _lookupItem = await Http.GetFromJsonAsync<LookupTypeForm.LookupType>($"api/{Type}/{_id}") ?? new LookupTypeForm.LookupType();
         }
     }
 
     private async Task ConfirmDelete()
     {
-        try
+        var response = await Http.DeleteAsync($"api/{Type}/{_id}");
+        if (response.IsSuccessStatusCode)
         {
-            var response = await Http.DeleteAsync($"api/{Type}/{_id}");
-
-            if (response.IsSuccessStatusCode)
-            {
-                Navigation.NavigateTo($"/lookup/{Type}");
-            }
-            else
-            {
-                Console.WriteLine($"Error deleting data: {response.StatusCode}");
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Delete Error: {ex.Message}");
+            Navigation.NavigateTo($"/lookup/{Type}");
         }
     }
-
-    private static string GetTitle(string type) => type switch
-    {
-        "IndustryType" => "Delete Industry Type",
-        "FilingType" => "Delete Filing Type",
-        "LicenseType" => "Delete License Type",
-        _ => "Delete Lookup Data"
-    };
 }
 
-<h3>@_title</h3>
-
-<p>Are you sure you want to delete this record?</p>
-
-<div>
-    <label>ID:</label>
-    <label>@Id</label>
-</div>
-<div>
-    <label for="name">Name:</label>
-    <input id="name" @bind="_lookupItem.Name" disabled />
-</div>
-
-<button @onclick="ConfirmDelete">Confirm Delete</button>
-<a href="/lookup/@Type">Cancel</a>
-
-@code {
-    public class LookupType : DataAPI.Data.LookupType
-    {
-        public int Id { get; set; }
-        public string Name { get; set; }
-    }
-}
+<LookupTypeForm LookupTypePath="@Type" LookupItem="_lookupItem" OnSave="ConfirmDelete" IsReadOnly="true" />

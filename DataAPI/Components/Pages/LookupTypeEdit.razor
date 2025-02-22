@@ -1,82 +1,31 @@
 @page "/lookup/{Type}/{Id}"
-@using Microsoft.AspNetCore.Mvc
 @inject HttpClient Http
 @inject NavigationManager Navigation
 
-@rendermode InteractiveServer
-
 @code {
-    [Parameter]
-    [FromRoute] public string? Type { get; set; }
+    [Parameter] public string Type { get; set; }
+    [Parameter] public string Id { get; set; }
 
-    [Parameter]
-    [FromRoute] public string Id { get; set; }
-
-    private LookupType _lookupItem = new LookupType();
-    private string _title = "";
     private int _id = 0;
+    private LookupTypeForm.LookupType _lookupItem = new();
 
     protected override async Task OnParametersSetAsync()
     {
-
-        if (!string.IsNullOrEmpty(Type) && !string.IsNullOrEmpty(Id))
+        if (!string.IsNullOrEmpty(Type))
         {
-            _title = GetTitle(Type);
             _id = int.Parse(Id);
-            try
-            {
-                _lookupItem = await Http.GetFromJsonAsync<LookupType>($"api/{Type}/{_id}") ?? new LookupType();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error fetching data: {ex.Message}");
-                Navigation.NavigateTo("/lookup");
-            }
+            _lookupItem = await Http.GetFromJsonAsync<LookupTypeForm.LookupType>($"api/{Type}/{_id}") ?? new LookupTypeForm.LookupType();
         }
     }
 
     private async Task Save()
     {
-        try
+        var response = await Http.PutAsJsonAsync($"api/{Type}/{_id}", _lookupItem);
+        if (response.IsSuccessStatusCode)
         {
-            _lookupItem.Id =_id; // Ensure correct ID before saving
-            var response = await Http.PutAsJsonAsync($"api/{Type}/{Id}", _lookupItem);
             Navigation.NavigateTo($"/lookup/{Type}");
         }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error fetching data: {ex.Message}");
-            Navigation.NavigateTo("/lookup");
-        }
-    }
-
-    private static string GetTitle(string type) => type switch
-    {
-        "IndustryType" => "Edit Industry Type",
-        "FilingType" => "Edit Filing Type",
-        "LicenseType" => "Edit License Type",
-        _ => "Edit Lookup Data"
-    };
-}
-
-<h3>@_title</h3>
-
-<div>
-    <label>ID:</label>
-    <label>@Id</label>
-</div>
-<div>
-    <label for="name">Name:</label>
-    <input id="name" @bind="_lookupItem.Name" />
-</div>
-
-<button @onclick="Save">Save</button>
-<a href="/lookup/@Type">Cancel</a>
-
-@code {
-    public class LookupType : DataAPI.Data.LookupType
-    {
-        public int Id { get; set; }
-        public string Name { get; set; }
     }
 }
+
+<LookupTypeForm LookupTypePath="@Type" LookupItem="_lookupItem" OnSave="Save" />

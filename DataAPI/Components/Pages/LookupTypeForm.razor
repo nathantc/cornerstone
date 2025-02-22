@@ -1,0 +1,35 @@
+@code {
+    [Parameter] public string LookupTypePath { get; set; }
+    [Parameter] public LookupType LookupItem { get; set; } = new LookupType();
+    [Parameter] public EventCallback OnSave { get; set; }
+    [Parameter] public bool IsReadOnly { get; set; } = false;
+}
+
+<h3>@(IsReadOnly ? "Delete Lookup Type" : LookupItem.Id == 0 ? "Add Lookup Type" : "Edit Lookup Type")</h3>
+
+<div>
+    <label>ID:</label>
+    <label>@LookupItem.Id</label>
+</div>
+<div>
+    <label for="name">Name:</label>
+    <input id="name" @bind="LookupItem.Name" disabled="@IsReadOnly" />
+</div>
+
+@if (!IsReadOnly)
+{
+    <button @onclick="OnSave">Save</button>
+}
+else
+{
+    <button @onclick="OnSave">Confirm Delete</button>
+}
+<a href="/lookup/@LookupTypePath">Cancel</a>
+
+@code {
+    public class LookupType
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+    }
+}
